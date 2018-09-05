@@ -11,6 +11,10 @@ module Fluent::Plugin
 
     desc "point a key whose value contains URL string."
     config_param :key,    :string
+    desc "If set, the key/value will be reformd array whose would be added to the record."
+    config_param :array_value,   :string, default: nil
+    desc "array_value's key in record"
+    config_param :array_value_key,   :string, default: nil
     desc "If set, only the key/value whose key is included only will be added to the record."
     config_param :only,   :string, default: nil
     desc "If set, the key/value whose key is included except will NOT be added to the record."

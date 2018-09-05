@@ -22,6 +22,8 @@ module Fluent::Plugin
       @discard_key = plugin.discard_key
       @add_field_prefix = plugin.add_field_prefix
       @permit_blank_key = plugin.permit_blank_key
+      @array_value = plugin.array_value
+      @array_value_key = plugin.array_value_key
 
       if @only
         @include_keys = @only.split(/\s*,\s*/).inject({}) do |hash, i|
@@ -37,22 +39,15 @@ module Fluent::Plugin
         end
       end
 
-      @map = {}
-    # <record></record> directive
-      conf.elements.select { |element| element.name == 'record' }.each { |element|
-        element.each_pair { |k, v|
-          element.has_key?(k) # to suppress unread configuration warning
-          @map[k] = v
-        }
-      }
-    end
-
-    def add_record_field(record)
-      return record if @map.values.first.nil?
-      @map.each do |record_key, value|
-        record[record_key] = value
+      if @array_value_key
+        if @array_value
+          @include_array_value = @array_value.split(/\s*,\s*/).inject({}) do |hash, i|
+            hash[i] = true
+            hash
+          end
+        end
       end
-      record
+
     end
 
     def add_query_params_field(record)
@@ -89,7 +84,7 @@ module Fluent::Plugin
 
     def add_query_params(body, record)
       return if body.nil?
-      add_record_field(record)
+      placeholder = [];
       body.split('&').each do |pair|
         key, value = pair.split('=', 2).map { |i| CGI.unescape(i) }
         next if (key.nil? || key.empty?) && (!permit_blank_key? || value.nil? || value.empty?)
@@ -104,7 +99,15 @@ module Fluent::Plugin
         else
           record[new_key] = value
         end
+        if @include_array_value
+          placeholder[placeholder.size] = value if !@include_array_value.has_key?(key)
+        end
       end
+      
+      unless placeholder.empty?
+        record[@array_value_key] = placeholder;
+      end
+      
     end
   end
 end
