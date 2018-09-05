@@ -6,7 +6,7 @@ module Fluent::Plugin
   class ParseRequestBodyExtractor
 
     attr_reader :log
-
+    
     def initialize(plugin, conf)
       @log = plugin.log
 
@@ -42,30 +42,9 @@ module Fluent::Plugin
       conf.elements.select { |element| element.name == 'record' }.each { |element|
         element.each_pair { |k, v|
           element.has_key?(k) # to suppress unread configuration warning
-          v = v[1..v.size-2] if quoted_value?(v)
           @map[k] = v
-          validate_json = Proc.new {
-            begin
-              dummy_text = Yajl::Encoder.encode('dummy_text')
-              Yajl::Parser.parse(v.gsub(REGEXP_PLACEHOLDER_SCAN, dummy_text))
-            rescue Yajl::ParseError => e
-              message = "parse_body: failed to parse '#{v}' as json."
-              log.error message, error: e
-              raise Fluent::ConfigError, message
-            end
-          }
-          validate_json.call if json?(v.tr('\'"\\', ''))
         }
       }
-    end
-
-    def json?(text)
-      text.match(/^\[.+\]$/) || text.match(/^\{.+\}$/)
-    end
-
-    def quoted_value?(text)
-      # to improbe compatibility with fluentd v1-config
-      text.match(/(^'.+'$|^".+"$)/)
     end
 
     def add_record_field(record)
