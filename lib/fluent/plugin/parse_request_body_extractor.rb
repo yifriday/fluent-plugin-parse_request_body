@@ -59,6 +59,10 @@ module Fluent::Plugin
       }
     end
 
+    def json?(text)
+      text.match(/^\[.+\]$/) || text.match(/^\{.+\}$/)
+    end
+
     def quoted_value?(text)
       # to improbe compatibility with fluentd v1-config
       text.match(/(^'.+'$|^".+"$)/)
