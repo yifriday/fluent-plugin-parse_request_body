@@ -101,6 +101,7 @@ module Fluent::Plugin
 
     def add_query_params(body, record)
       return if body.nil?
+      add_record_field(record)
       body.split('&').each do |pair|
         key, value = pair.split('=', 2).map { |i| CGI.unescape(i) }
         next if (key.nil? || key.empty?) && (!permit_blank_key? || value.nil? || value.empty?)
@@ -115,7 +116,6 @@ module Fluent::Plugin
         else
           record[new_key] = value
         end
-        add_record_field(record)
       end
     end
   end
