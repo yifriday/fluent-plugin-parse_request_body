@@ -59,6 +59,11 @@ module Fluent::Plugin
       }
     end
 
+    def quoted_value?(text)
+      # to improbe compatibility with fluentd v1-config
+      text.match(/(^'.+'$|^".+"$)/)
+    end
+
     def add_record_field(record)
       return record if @map.values.first.nil?
       @map.each do |record_key, value|
