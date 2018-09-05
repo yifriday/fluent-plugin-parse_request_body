@@ -78,13 +78,13 @@ module Fluent::Plugin
         key ||= ''
         value ||= ''
 
-        key = create_field_key(key)
+        new_key = create_field_key(key)
         if @only
-          record[key] = value if @include_keys.has_key?(key)
+          record[new_key] = value if @include_keys.has_key?(key)
         elsif @except
-          record[key] = value if !@exclude_keys.has_key?(key)
+          record[new_key] = value if !@exclude_keys.has_key?(key)
         else
-          record[key] = value
+          record[new_key] = value
         end
       end
     end
