@@ -100,10 +100,10 @@ module Fluent::Plugin
           record[new_key] = value
         end
         if @include_array_value
-          placeholder[placeholder.size] = value if !@include_array_value.has_key?(key)
+          placeholder[placeholder.size] = value if @include_array_value.has_key?(key)
         end
       end
-      
+
       unless placeholder.empty?
         record[@array_value_key] = placeholder;
       end
