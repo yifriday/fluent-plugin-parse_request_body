@@ -36,6 +36,35 @@ module Fluent::Plugin
           hash
         end
       end
+
+      @map = {}
+    # <record></record> directive
+      conf.elements.select { |element| element.name == 'record' }.each { |element|
+        element.each_pair { |k, v|
+          element.has_key?(k) # to suppress unread configuration warning
+          v = v[1..v.size-2] if quoted_value?(v)
+          @map[k] = v
+          validate_json = Proc.new {
+            begin
+              dummy_text = Yajl::Encoder.encode('dummy_text')
+              Yajl::Parser.parse(v.gsub(REGEXP_PLACEHOLDER_SCAN, dummy_text))
+            rescue Yajl::ParseError => e
+              message = "parse_body: failed to parse '#{v}' as json."
+              log.error message, error: e
+              raise Fluent::ConfigError, message
+            end
+          }
+          validate_json.call if json?(v.tr('\'"\\', ''))
+        }
+      }
+    end
+
+    def add_record_field(record)
+      return record if @map.values.first.nil?
+      @map.each do |record_key, value|
+        record[record_key] = value
+      end
+      record
     end
 
     def add_query_params_field(record)
@@ -86,6 +115,7 @@ module Fluent::Plugin
         else
           record[new_key] = value
         end
+        add_record_field(record)
       end
     end
   end
