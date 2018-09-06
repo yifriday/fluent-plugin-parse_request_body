@@ -60,7 +60,6 @@ module Fluent::Plugin
 
     def replace_record_by_key(record)
       return record unless record[@replace_key]
-      replace_value = record[@replace_key]
       value = record[@array_value_key]
       record[@replace_key] = value if value 
       record.delete(@array_value_key)
@@ -118,8 +117,10 @@ module Fluent::Plugin
         record[@array_value_key] = "#{placeholder}";
       end
 
-      replace_record_by_key(record)
-      
+      if @replace_key
+        replace_record_by_key(record)
+      end
+
     end
   end
 end
