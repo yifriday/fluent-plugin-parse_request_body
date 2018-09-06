@@ -6,8 +6,10 @@ module Fluent::Plugin
 
     Fluent::Plugin.register_filter('parse_request_body', self)
 
-    desc "point a key whose value contains URL string."
+    desc "point a key whose value contains body string."
     config_param :key,    :string
+    desc "point a key who will be replaced."
+    config_param :replace_key,    :string, default: nil
     desc "If set, the key/value will be reformd array whose would be added to the record."
     config_param :array_value,   :string, default: nil
     desc "array_value's key in record"
