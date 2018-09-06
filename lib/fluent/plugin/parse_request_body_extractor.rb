@@ -64,7 +64,9 @@ module Fluent::Plugin
     def replace_record_by_key(record)
       return record unless record[@replace_key]
       replace_value = record[@array_value_key]
-      record[@replace_key] = replace_value if replace_value 
+      if replace_value && replace_value.to_i
+        record[@replace_key] = replace_value
+      end
     end
 
     def have_tag_option?(plugin)
