@@ -58,15 +58,14 @@ module Fluent::Plugin
       record
     end
 
+    private
+
     def replace_record_by_key(record)
       return record unless record[@replace_key]
       value = record[@array_value_key]
       record[@replace_key] = value if value 
-      record.delete(@array_value_key)
       record
     end
-
-    private
 
     def have_tag_option?(plugin)
       plugin.remove_tag_prefix ||
@@ -114,7 +113,7 @@ module Fluent::Plugin
       end
 
       unless placeholder.empty?
-        record[@array_value_key] = "#{placeholder}";
+        record[@array_value_key] = "#{placeholder}"
       end
 
       if @replace_key

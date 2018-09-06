@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name          = 'fluent-plugin-parse_request_body'
-  gem.version       = '0.0.12'
+  gem.version       = '0.0.13'
   gem.authors       = ['EkiSong']
   gem.email         = ['yifriday0614@gmail.com']
   gem.homepage      = 'https://github.com/yifriday/fluent-plugin-parse_request_body.git'
