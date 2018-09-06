@@ -24,7 +24,7 @@ module Fluent::Plugin
       @permit_blank_key = plugin.permit_blank_key
       @array_value = plugin.array_value
       @array_value_key = plugin.array_value_key
-      @replace_key = plugin.replace_key;
+      @replace_key = plugin.replace_key
 
       if @only
         @include_keys = @only.split(/\s*,\s*/).inject({}) do |hash, i|
