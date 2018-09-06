@@ -109,12 +109,12 @@ module Fluent::Plugin
         end
 
         if @include_array_value
-          placeholder[placeholder.size] = value if @include_array_value.has_key?(key)
+          placeholder[placeholder.size] = value.to_f if @include_array_value.has_key?(key)
         end
       end
 
       unless placeholder.empty?
-        record[@array_value_key] = "#{placeholder}"
+        record[@array_value_key] = placeholder
       end
     end
   end
