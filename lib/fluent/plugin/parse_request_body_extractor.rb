@@ -24,6 +24,7 @@ module Fluent::Plugin
       @permit_blank_key = plugin.permit_blank_key
       @array_value = plugin.array_value
       @array_value_key = plugin.array_value_key
+      @replace_key = plugin.replace_key;
 
       if @only
         @include_keys = @only.split(/\s*,\s*/).inject({}) do |hash, i|
@@ -54,6 +55,15 @@ module Fluent::Plugin
       return record unless record[@key]
       add_query_params(record[@key], record)
       record.delete(@key) if @discard_key
+      record
+    end
+
+    def replace_record_by_key(record)
+      return record unless record[@replace_key]
+      replace_value = record[@replace_key]
+      value = record[@array_value_key]
+      record[@replace_key] = value if value 
+      record.delete(@array_value_key)
       record
     end
 
@@ -105,8 +115,10 @@ module Fluent::Plugin
       end
 
       unless placeholder.empty?
-        record[@array_value_key] = placeholder;
+        record[@array_value_key] = "#{placeholder}";
       end
+
+      replace_record_by_key(record)
       
     end
   end
