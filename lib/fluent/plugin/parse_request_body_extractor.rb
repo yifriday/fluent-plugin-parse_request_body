@@ -54,6 +54,7 @@ module Fluent::Plugin
     def add_query_params_field(record)
       return record unless record[@key]
       add_query_params(record[@key], record)
+      replace_record_by_key(record) if @replace_key
       record.delete(@key) if @discard_key
       record
     end
@@ -62,9 +63,8 @@ module Fluent::Plugin
 
     def replace_record_by_key(record)
       return record unless record[@replace_key]
-      value = record[@array_value_key]
-      record[@replace_key] = value if value 
-      record
+      replace_value = record[@array_value_key]
+      record[@replace_key] = replace_value if replace_value 
     end
 
     def have_tag_option?(plugin)
@@ -92,7 +92,7 @@ module Fluent::Plugin
 
     def add_query_params(body, record)
       return if body.nil?
-      placeholder = [];
+      placeholder = []
       body.split('&').each do |pair|
         key, value = pair.split('=', 2).map { |i| CGI.unescape(i) }
         next if (key.nil? || key.empty?) && (!permit_blank_key? || value.nil? || value.empty?)
@@ -107,6 +107,7 @@ module Fluent::Plugin
         else
           record[new_key] = value
         end
+
         if @include_array_value
           placeholder[placeholder.size] = value if @include_array_value.has_key?(key)
         end
@@ -115,11 +116,6 @@ module Fluent::Plugin
       unless placeholder.empty?
         record[@array_value_key] = "#{placeholder}"
       end
-
-      if @replace_key
-        replace_record_by_key(record)
-      end
-
     end
   end
 end
