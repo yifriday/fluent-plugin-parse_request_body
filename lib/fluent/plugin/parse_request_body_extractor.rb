@@ -118,7 +118,7 @@ module Fluent::Plugin
           record[new_key] = value
         end
 
-        if @include_array_value && @include_array_value.has_key?(key) && value.to_i
+        if @include_array_value && @include_array_value.has_key?(key) && (value.to_f != 0)
           placeholder[placeholder.size] = value.to_f
         end
       end
