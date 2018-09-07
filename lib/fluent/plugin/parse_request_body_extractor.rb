@@ -6,7 +6,8 @@ module Fluent::Plugin
   class ParseRequestBodyExtractor
 
     attr_reader :log
-    
+        
+    #初始化解析器#
     def initialize(plugin, conf)
       @log = plugin.log
 
@@ -16,6 +17,7 @@ module Fluent::Plugin
         end
       end
 
+      #从配置中读取配置选项#
       @key = plugin.key
       @only = plugin.only
       @except = plugin.except
@@ -26,6 +28,7 @@ module Fluent::Plugin
       @array_value_key = plugin.array_value_key
       @replace_key = plugin.replace_key
 
+      #初始化白名单#
       if @only
         @include_keys = @only.split(/\s*,\s*/).inject({}) do |hash, i|
           hash[i] = true
@@ -33,6 +36,7 @@ module Fluent::Plugin
         end
       end
 
+      #初始化黑名单#
       if @except
         @exclude_keys = @except.split(/\s*,\s*/).inject({}) do |hash, i|
           hash[i] = true
@@ -40,6 +44,7 @@ module Fluent::Plugin
         end
       end
 
+      #初始化需要被组合的key#
       if @array_value_key
         if @array_value
           @include_array_value = @array_value.split(/\s*,\s*/).inject({}) do |hash, i|
@@ -51,6 +56,7 @@ module Fluent::Plugin
 
     end
 
+    #解析方法#
     def add_query_params_field(record)
       return record unless record[@key]
       add_query_params(record[@key], record)
@@ -61,6 +67,7 @@ module Fluent::Plugin
 
     private
 
+    #替换record中某一个键值#
     def replace_record_by_key(record)
       return record unless record[@replace_key]
       replace_value = record[@array_value_key]
@@ -111,8 +118,8 @@ module Fluent::Plugin
           record[new_key] = value
         end
 
-        if @include_array_value
-          placeholder[placeholder.size] = value.to_f if @include_array_value.has_key?(key)
+        if @include_array_value && @include_array_value.has_key?(key) && value.to_i
+          placeholder[placeholder.size] = value.to_f
         end
       end
 
