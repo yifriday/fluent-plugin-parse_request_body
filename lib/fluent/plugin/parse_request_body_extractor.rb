@@ -71,12 +71,11 @@ module Fluent::Plugin
     def replace_record_by_key(record)
       return record unless record[@replace_key]
       replace_value = record[@array_value_key]
-      empty_count = 0
-      for item in 0..replace_value.size
-        empty_count += 1 if item == 0
-      end
-      if replace_value && (empty_count != replace_value.size)
-        record[@replace_key] = replace_value
+      if replace_value
+        empty_value = replace_value.select {|item| item == 0 }
+        if (empty_value.size != replace_value.size)
+          record[@replace_key] = replace_value
+        end
       end
     end
 
