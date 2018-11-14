@@ -104,7 +104,7 @@ module Fluent::Plugin
 
     def add_query_params(body, record)
       return if body.nil?
-      placeholder = []
+      keyCcount = 0
       body.split('&').each do |pair|
         key, value = pair.split('=', 2).map { |i| CGI.unescape(i) }
         next if (key.nil? || key.empty?) && (!permit_blank_key? || value.nil? || value.empty?)
@@ -121,12 +121,13 @@ module Fluent::Plugin
         end
 
         if @include_array_value && @include_array_value.has_key?(key) && (value.to_f != 0)
-          placeholder[placeholder.size] = value.to_f
+          @include_array_value[key] = value.to_f
+          keyCcount += 1
         end
       end
 
-      unless placeholder.empty?
-        record[@array_value_key] = placeholder
+      if @include_array_value.length == keyCcount
+        record[@array_value_key] = @include_array_value.values
       end
     end
   end
